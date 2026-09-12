@@ -1,5 +1,5 @@
 <html>
 <body>
-<h2>Hi Girish, hows your DevOps Preparation going on...?? When are you going to appear for the Interviews ??</h2>
+<h2>DevOps field is hig revenue profile....!!</h2>
 </body>
 </html>
