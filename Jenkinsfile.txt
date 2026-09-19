@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    environment {
+        path = "$PATH:/opt/apache-maven-3.9.16/bin"
+    }
+
+    stages {
+        stage('Get code') {
+            steps {
+                git 'https://github.com/girirajhadake/JAVA-MAVEN-WEB-APP.git'
+            }   
+        }
+        
+        stage('Build Code') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('Sonar-Server-25.12') {
+                    sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.token=squ_84d324be25f255a1649c2c87831b959a647be9ac'
+                }
+            }
+        }
+
+        stage('Deploy Code') {
+            steps {
+                // The scp command is now correctly wrapped inside the sshagent closure body
+                sshagent(credentials: ['apache-tomcat-key']) {
+                    sh 'scp -o StrictHostKeyChecking=no target/SpringRestIntegrationApp-0.0.1-SNAPSHOT.war ec2-user@13.201.81.105:/home/ec2-user/apache-tomcat-10.0.23/webapps'
+                }
+            }
+        }
+    }
+}
